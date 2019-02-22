@@ -1,7 +1,8 @@
 version: 2.1
 orbs:
-  cypress: cypress-io/cypress@1.0.1
+  cypress: cypress-io/cypress@1
 workflows:
   build:
     jobs:
-      - cypress/run # "run" job comes from "cypress" orb hi pretending to change a thing again
+      - cypress/run:
+          store_artifacts: true

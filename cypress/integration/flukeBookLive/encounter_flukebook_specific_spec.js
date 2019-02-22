@@ -1,19 +1,37 @@
+describe('Logs into flukebook programmatically', function() {
+it.skip('logs into flukebook programmatically', function(){
+    cy.fixture('liveVariables.json').then((liveVars)=>{
+      cy.loginProgrammatically(liveVars.username, liveVars.password);
+      cy.visit('/welcome.jsp');
+      cy.url().should('match',/welcome/);
+    });
+  });
+});
+
 //TODO test all of these again
-describe('Wildbook instance encounter page tests that only need me to log in once', function() {
-  beforeEach(()=>{ //why before each? Because I don't want the UI changes to accumulate state changes
-  cy.logout();
-  cy.loginProgrammatically();
-  cy.createAndNavigateToEncounterFlukeBook();
-  // cy.findAndNavigateToFirstUnapprovedPortlandEncounter(); //TODO can speed this up still
+describe('Flukebook instance encounter page tests that only need me to log in once', function() {
+  before(()=>{
+    Cypress.config('baseUrl','https://www.flukebook.org/');
+    cy.fixture('liveVariables.json').then((liveVars)=>{
+      cy.loginProgrammatically(liveVars.username, liveVars.password);
+    });
+  });
+
+// afterEach(function () {
+//   //TODO anything?
+//   // cy.deleteEncounterFlukebook();
+// });
+
+it('tests whether submitNewEncounterProgrammaticallyFlukebook works', function(){
+    cy.submitNewEncounterAndConfirmPresencesProgrammaticallyFlukebook();
+    // let currentUrl = cy.url();
+    // cy.log(currentUrl);
+    // console.log(currentUrl);
 });
 
-afterEach(function () {
-  cy.deleteEncounterFlukebook();
-})
-
-it('tests whether createAndNavigateToEncounterFlukeBook works', function(){
-  cy.createAndNavigateToEncounterFlukeBook();
-});
+// it('tests whether createAndNavigateToEncounterFlukeBookManually works', function(){ //TODO currently manual submission of forms doesn't seem to work with wildBook on cypress. Weird. Works fine on my other app.
+//   cy.createAndNavigateToEncounterFlukeBookManually();
+// });
 
 it.skip('displays some known text in encounter.jsp', function(){
   cy.contains('Location');
@@ -21,30 +39,50 @@ it.skip('displays some known text in encounter.jsp', function(){
   cy.contains('Gallery');
 });
 
-it.skip('can edit location', function(){
+it('can edit location', function(){ //TODO LEFT OFF HERE
   cy.get('button[id=editLocation]').click();
-  cy.get('textarea[name=location]').type('Vancouver, WA');
-  cy.get('input[id=addLocation]').click();
-  cy.get('#selectCountry').select('United States', {force: true});
-  cy.get('input[id=countryFormBtn]').click();
-  cy.get('#selectCode').select('Study Site 1', {force: true});
-  cy.get('input[id=setLocationBtn]').click();
-  cy.get('input[id=depthInput]').type('1');
-  cy.get('input[id=AddDepth]').click();
-  cy.get('input[id=lat]').type('45.634268');
-  cy.get('input[id=longitude]').type('-122.665984');
-  cy.get('input[id=setGPSbutton]').click({force: true});
+  cy.url().then(result =>{
+    // cy.log(result);
+    let encounterNum = result.match(/.*number=(\d.*$)/)[1];
+    cy.log(encounterNum);
+    let formData = new FormData();
+    formData.append("number", encounterNum);
+    formData.append("encounter", encounterNum);
+    formData.append("location", "Dark Woods");
+    cy.form_request('https://www.flukebook.org/IndividualAddEncounter', formData);
+  });
+
+  // cy.get('textarea[name=location]').type('Dark Woods');
+  // cy.get('input[id=addLocation]').click();
+  // cy.get('#selectCountry').select('United States', {force: true});
+  // cy.get('input[id=countryFormBtn]').click();
+  // cy.get('#selectCode').select('Study Site 1', {force: true});
+  // cy.get('input[id=setLocationBtn]').click();
+  // cy.get('input[id=depthInput]').type('1');
+  // cy.get('input[id=AddDepth]').click();
+  // cy.get('input[id=lat]').type('45.634268');
+  // cy.get('input[id=longitude]').type('-122.665984');
+  // cy.get('input[id=setGPSbutton]').click({force: true});
   cy.get('button[id=closeEditLocation]').click();
+  cy.contains('Dark Woods');
 });
 
 it.skip('can add to marked individual', function(){
-  // cy.createAndNavigateToEncounterFlukeBook();
+  // let formData = new FormData();
+  // formData.append("individual", "frumpy");
+  // formData.append("matchType", "Pattern match");
+  // cy.form_request('https://www.flukebook.org/IndividualAddEncounter', formData);
+  cy.url().then(result =>{
+    cy.log(result);
+  });
+
   cy.get('button[id=editIdentity]').click();
   cy.get('input[id=individualAddEncounterInput]').type('frumpy', {force: true}); //TODO add real whale name here
   cy.get('#matchType').select('Pattern match', {force: true});
   cy.get('input[id=Add]').click({force: true});
   cy.get('button[id=closeEditIdentity]').click();
-  cy.contains('frumpy');
+  cy.reload();
+  // cy.contains('frumpy');
 });
 
 it.skip('can create marked individual', function(){
@@ -76,8 +114,8 @@ it.skip('creates occurrence', function(){
 
 it.skip('adds to occurrence', function(){
   cy.get('button[id=editIdentity]').click();
-  cy.get('input[id=add2OccurrenceInput]').type('knownOccurrence123'); //TODO do I have to find a real occurrence that I can mess with?
-  cy.get('input[id=addOccurrence]').click();
+  cy.get('input[id=add2OccurrenceInput]').type('knownOccurrence123', {force:true}); //TODO do I have to find a real occurrence that I can mess with?
+  cy.get('input[id=addOccurrence]').click({force:true});
   cy.get('button[id=closeEditIdentity]').click();
   //TODO add assert
 });
@@ -96,7 +134,7 @@ it.skip('tests whether metadata should not have two assign to user', function(){
 it.skip('assign to user dropdown should not contain null', function(){
   cy.get('button[id=editMeta]').click();
   cy.get('#submitterSelect').contains('null').should('not.exist');
-  //TODO a known bug in wildbook
+  //ATTN a known bug in wildbook
 });
 
 it.skip('assigns approved state and then changes to unapproved state', function(){
@@ -274,11 +312,6 @@ it.skip('adds biological sample with minimal input', function(){
 });
 
 it.skip('adds biological sample with maximal input', function(){
-  cy.on('uncaught:exception', (err, runnable) => {
-    // expect(err.message).to.include('of undefined')
-    // done()
-    return false;
-  });
   cy.get('a').contains('Add biological sample').click();
   cy.get('input[name=sampleID]').first().type("bioSample123");
   cy.get('input[name=alternateSampleID]').first().type("bioSample123AltId");
@@ -313,6 +346,15 @@ it.skip('adds biological sample with maximal input', function(){
   cy.contains(/Storage lab ID:\s*bioSample123Lab456/).should('exist');
 });
 
+it.skip('edits date', function(){
+  cy.get('button[id=editDate]').click();
+  cy.get('input[id=datepickerField]').type('2018-12-21 05:00');
+  cy.get('input[id=addResetDate]').click({force: true});
+  cy.get('button[id=closeEditDate]').click();
+  cy.contains('2018-12-21 05:00');
+  //TODO I don't understand why this test fails; it shouldn't
+});
+
 });
 
 describe('Flukebook instance encounter page no delete after each', function() {
@@ -321,18 +363,37 @@ describe('Flukebook instance encounter page no delete after each', function() {
     cy.createAndNavigateToEncounterFlukeBook();
   });
 
-  it.skip('creates and then deletes encounter', function(){
-      cy.deleteEncounterFlukebook();
-      cy.url().should('match',/EncounterDelete/);
-      cy.contains('I have removed encounter');
-      cy.go('back');
-      cy.contains('There is no corresponding encounter number in the database');
-    });
+it.skip('creates and then deletes encounter', function(){
+    cy.deleteEncounterFlukebook();
+    cy.url().should('match',/EncounterDelete/);
+    cy.contains('I have removed encounter');
+    cy.go('back');
+    cy.contains('There is no corresponding encounter number in the database');
+  });
 
-    it.skip('adds and removes adoption', function(){
-      cy.get('a').contains('Add adoption').click({timeout: 60000});
-      cy.get('p').contains('I could not find the adoption null').should('not.exist');
-      //TODO test whether this fails because of a bug like it does in generic wildbook
-      //TODO move out of Wildbook instance encounter page no delete after each after it starts passing
-    });
+it.skip('adds and removes adoption', function(){
+    cy.get('a').contains('Add adoption').click({timeout: 60000});
+    cy.get('p').contains('I could not find the adoption null').should('not.exist');
+    //TODO test whether this fails because of a bug like it does in generic wildbook
+    //TODO move out of Wildbook instance encounter page no delete after each after it starts passing
+  });
+
+it.skip('adds image to encounter', function(){
+    cy.get('input[id=file-chooser]').click();
+    //TODO do things
+    cy.get('input[id=upload-button]').click();
+    cy.contains('Upload complete. Refresh page to see new image.');
+  });
 });
+//TODO maybe missing at the end }); ?
+
+describe('Flukebook instance encounter page no after each and no before each', function() {
+it.skip('adds image to encounter', function(){
+    cy.loginProgrammatically();
+    cy.visit('/encounters/encounter.jsp?number=861d46de-52bb-4ab7-8f76-efda110854c9');
+    cy.uploadFile('#file-chooser','fluke_manip.jpg');
+  });
+});
+
+
+//TODO removing marked individual from encounter is a mess. Test for this.

@@ -13,9 +13,11 @@
   "collaboratorA_Username": "collaborator_a",
   "collaboratorA_Password": "tomcat123",
   "collaboratorA_imageName": "mystery_insect.jpg",
+  "collaboratorA_encounterUrl": "/encounters/encounter.jsp?number=e1218e22-6a53-4c6c-8d16-d7fa1220d141",
   "collaboratorB_Username": "collaborator_b",
   "collaboratorB_Password": "tomcat123",
   "collaboratorC_Username": "collaborator_c",
   "collaboratorC_Password": "tomcat123",
-  "nonCollaboratorMessage": "Request collaboration with"
+  "nonCollaboratorMessage": "Request collaboration with",
+  "noEncounterMessage": "There is no corresponding encounter number in the database"
 }

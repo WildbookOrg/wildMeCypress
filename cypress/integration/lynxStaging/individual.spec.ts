@@ -9,28 +9,28 @@ describe('Tests relating to individuals.jsp', function() {
   afterEach(function () {
     cy.logout();
   });
-  it.skip("Shows test individual when navigating to its encounter page when logged in as admin", function(){
+  it("Shows test individual when navigating to its encounter page when logged in as admin", function(){
     cy.fixture('liveVariables.json').then((liveVars) =>{
       cy.visit("/individuals.jsp?number=" + liveVars.testIndividualName);
       cy.contains('h1', liveVars.markedIndividualWithName).should('exist');
     });
   });
 
- it.skip("Doesn't show encountersTableTab of test individual when logged in as admin", function(){
+ it("Doesn't show encountersTableTab of test individual when logged in as admin", function(){
    cy.fixture('liveVariables.json').then((liveVars) =>{
      cy.visit("/individuals.jsp?number=" + liveVars.testIndividualName);
      cy.contains('a', liveVars.encounterTableText).should('not.exist');
    });
  });
 
- it.skip("Doesn't show cooccurrencesDiagramText of test individual when logged in as admin", function(){
+ it("Doesn't show cooccurrencesDiagramText of test individual when logged in as admin", function(){
    cy.fixture('liveVariables.json').then((liveVars) =>{
      cy.visit("/individuals.jsp?number=" + liveVars.testIndividualName);
      cy.contains('a', liveVars.cooccurrencesDiagramText).should('not.exist');
    });
  });
 
- it.skip("Doesn't show cooccurrencesTable Text of test individual when logged in as admin", function(){
+ it("Doesn't show cooccurrencesTable Text of test individual when logged in as admin", function(){
    cy.fixture('liveVariables.json').then((liveVars) =>{
      cy.visit("/individuals.jsp?number=" + liveVars.testIndividualName);
      cy.contains('a', liveVars.cooccurrencesTableText).should('not.exist');
@@ -57,7 +57,7 @@ describe('Tests relating to individuals.jsp', function() {
    });
  });
 
- it.skip("Shows collaborator C not being able to see search results of encounters created by collaborator A", function(){
+ it("Shows collaborator C not being able to see search results of encounters created by collaborator A", function(){
    cy.fixture('liveVariables.json').then((liveVars) =>{
      cy.logout();
      cy.loginLynxStaging(liveVars.collaboratorC_Username, liveVars.collaboratorC_Password);

@@ -19,5 +19,8 @@
   "collaboratorC_Username": "collaborator_c",
   "collaboratorC_Password": "tomcat123",
   "nonCollaboratorMessage": "Request collaboration with",
-  "noEncounterMessage": "There is no corresponding encounter number in the database"
+  "noEncounterMessage": "There is no corresponding encounter number in the database",
+  "matchingImagesVideos": "Matching Images/Videos",
+  "resultsCalendar": "Results Calendar",
+  "calendarEventName": "No ID (-)"
 }
